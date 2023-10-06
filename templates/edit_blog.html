@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center">Yeni Blog Gönder</h1>
+
+    <form method="post" enctype="multipart/form-data" class="bg-light p-5 rounded">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Başlık:</label>
+            <input type="text" id="title" name="title" class="form-control" value="{{ blog.title }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="comment" class="form-label">Yorum:</label>
+            <textarea id="comment" name="comment" class="form-control" required>{{ blog.comment }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="categories" class="form-label">Kategoriler:</label>
+            <select id="categories" name="categories" class="form-select" multiple>
+                {% for category in categories %}
+                <option value="{{ category.id }}" {% if category in blog.categories.all %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="newCategory" style="display: none;">
+            <input type="text" id="category_name" name="category_name" placeholder="Yeni Kategori Adı">
+            <button type="button" id="addNewCategory">Ekle</button>
+        </div>
+
+        <button class="btn btn-primary w-20" type="button" id="showNewCategory">Yeni Kategori Ekle</button>
+
+        <div class="mb-3">
+            <label for="image_file" class="form-label">Resim Yükle:</label>
+            <input type="file" id="image_file" name="image_file" class="form-control" accept="image/*">
+            {% if blog.image_file1 %}
+                <img src="{{ blog.image_file1.url }}" alt="Blog Image" class="mt-2" style="max-width: 300px;">
+            {% endif %}
+            {% if blog.image_file2 %}
+            <img src="{{ blog.image_file2.url }}" alt="Blog Image" class="mt-2" style="max-width: 300px;">
+        {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Gönder</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-primary text-white text-center">
+            <h2>Giriş Yap</h2>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="username" class="form-label">Kullanıcı Adı:</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Şifre:</label>
+                <input type="password" id="password" name="password" class="form-control" required>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Giriş Yap</button>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer text-center">
+            <p class="mb-0">Hesabınız yok mu? <a href="{% url 'register' %}">Kaydolun</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<style>
+  footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+      color: #fff; /* Footer metin rengi */
+      padding: 20px 0;
+      text-align: center;
+  }
+</style>
+
+{% endblock %}

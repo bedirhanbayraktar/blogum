@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+    <h1 class="text-center">Yeni Blog Gönder</h1>
+
+    <form method="post" enctype="multipart/form-data" class="bg-light p-5 rounded">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Başlık:</label>
+            <input type="text" id="title" name="title" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="comment" class="form-label">Yorum:</label>
+            <textarea id="comment" name="comment" class="form-control" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="categories" class="form-label">Kategoriler:</label>
+            <select id="categories" name="categories" class="form-select" multiple>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div id="newCategory" style="display: none;">
+            <input type="text" id="category_name" name="category_name" placeholder="Yeni Kategori Adı">
+            <button class="btn btn-primary w-8" type="button" id="addNewCategory">Ekle</button>
+        </div>        
+        
+        <button class="btn btn-primary w-20" type="button" id="showNewCategory">Yeni Kategori Ekle</button>   
+
+        <div class="mb-3">
+            <label for="image_file1" class="form-label">Resim 1 Yükle:</label>
+            <input type="file" id="image_file1" name="image_file1" class="form-control" accept="image/*" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="image_file2" class="form-label">Resim 2 Yükle:</label>
+            <input type="file" id="image_file2" name="image_file2" class="form-control" accept="image/*">
+        </div>
+        
+
+        <button type="submit" class="btn btn-primary w-100">Gönder</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const showNewCategoryButton = document.getElementById('showNewCategory');
+    const newCategoryDiv = document.getElementById('newCategory');
+    const newCategoryInput = document.getElementById('category_name');
+    const addNewCategoryButton = document.getElementById('addNewCategory');
+    const categoriesSelect = document.getElementById('categories');
+
+    showNewCategoryButton.addEventListener('click', function() {
+        newCategoryDiv.style.display = 'block';
+    });
+
+    addNewCategoryButton.addEventListener('click', function() {
+        const newCategoryName = newCategoryInput.value.trim();
+
+        if (newCategoryName !== '') {  // Kategori adı boş değilse işlem yap
+            // AJAX ile yeni kategori ekleme isteği yapın
+            fetch('create_category', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: `category_name=${encodeURIComponent(newCategoryName)}`,  // Veriyi düzgün şekilde kodlayın
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Seçilen olarak işaretle
+                    const newCategoryId = data.category_id;
+                    const option = document.createElement('option');
+                    option.value = newCategoryId;
+                    option.text = newCategoryName;
+                    categoriesSelect.appendChild(option);
+                    option.selected = true;
+    
+                    // Input'u temizle ve yeni kategori bölümünü gizle
+                    newCategoryInput.value = '';
+                    newCategoryDiv.style.display = 'none';
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Kategori eklenemedi.');
+            });
+        } else {
+            alert('Kategori adı boş olamaz.');
+        }
+    });    
+});
+</script>
+    
+
+{% endblock %}

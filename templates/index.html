@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+{% block content %}
+<header class="py-5 bg-light border-bottom mb-4">
+    <div class="container">
+        <div class="text-center my-5">
+            <h1 class="fw-bolder">Blog Sayfama Hoş geldiniz</h1>
+            <p class="lead mb-0"></p>
+        </div>
+    </div>
+    
+</header>
+
+<!-- Responsive navbar-->
+
+<!-- Page header with logo and tagline-->
+
+<!-- Page content-->
+<div class="container">
+    <div class="row">
+        <!-- Blog entries-->
+        <div class="col-lg-8">
+            {% if not blogs %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Henüz bir Blog eklenmemiş, ilk bloğu siz yazmak ister misiniz?</h2>
+                        {% if user.is_authenticated %}
+                            <a class="btn btn-primary" href="{% url 'create_blog' %}">Blog Ekle</a>
+                        {% else %}
+                            <a class="btn btn-primary" href="{% url 'register' %}">Kayıt Ol</a>
+                            <a class="btn btn-secondary" href="{% url 'login' %}">Giriş Yap</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                {% for blog in blogs|slice:"0:1" %}
+                    <div class="card mb-4">
+                        <a href="{% url 'blog_details' blog.id %}"><img class="card-img-top" src="{{ blog.image_file1.url }}" alt="{{ blog.title }}" /></a>
+                        <div class="card-body">
+                            <a href="{% url 'blog_details' blog.id %}" class="card-title"><h2>{{ blog.title }}</h2></a>
+                            <div class="small text-muted">{{ blog.publication_date|date:'d F Y - H:i' }}<br>Oluşturan: 
+                                {% for user in users %}
+                                    {% if user.id == blog.author_id %}
+                                        {{ user.username }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <br>
+                            <p class="card-text">{{ blog.comment|truncatechars:150 }}</p>
+                            <a class="btn btn-primary" href="{% url 'blog_details' blog.id %}">Bloğu Oku</a>
+                            
+                            {% if user.is_authenticated %}
+                                {% if user.id == blog.author_id %}
+                                    <!-- Kullanıcı giriş yaptı ve blogu kendisi yazdıysa -->
+                                    <a class="btn btn-warning" href="{% url 'edit_blog' blog.id %}"><i class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-danger" onclick="confirmDelete({{ blog.id }})"><i class="bi bi-trash"></i></button>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div class="row">
+                {% for blog in blogs|slice:"1:" %}
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <a href="{% url 'blog_details' blog.id %}"><img class="card-img-top" src="{{ blog.image_file1.url }}" alt="{{ blog.title }}" /></a>
+                        <div class="card-body">
+                            <a href="{% url 'blog_details' blog.id %}" class="card-title h4">{{ blog.title }}</a>
+                            <div class="small text-muted">{{ blog.publication_date|date:'d F Y - H:i' }}<br>Oluşturan: 
+                                {% for user in users %}
+                                    {% if user.id == blog.author_id %}
+                                        {{ user.username }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <br>
+                            <p class="card-text">{{ blog.comment|truncatechars:75 }}</p>
+                            <a class="btn btn-primary" href="{% url 'blog_details' blog.id %}">Bloğu Oku</a>
+                            
+                            {% if user.is_authenticated %}
+                                {% if user.id == blog.author_id %}
+                                    <a class="btn btn-warning" href="{% url 'edit_blog' blog.id %}"><i class="bi bi-pencil"></i></a>
+                                    <button class="btn btn-danger" onclick="confirmDelete({{ blog.id }})"><i class="bi bi-trash"></i></button>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>                       
+            <!-- Pagination
+            <nav aria-label="Pagination">
+                <hr class="my-0" />
+                <ul class="pagination justify-content-center my-4">
+                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
+                    <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">3</a></li>
+                    <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">15</a></li>
+                    <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+                </ul>
+            </nav>
+            -->
+        </div>
+        
+        <!-- Side widgets-->
+        <div class="col-lg-4">
+            <!-- Categories widget-->
+            <div class="card mb-4">
+                <div class="card-header">Kategoriler</div>
+                <div class="card-body">
+                    <div class="row" id="category-container">
+                        {% for category in categories %}
+                        <div class="col-sm-6 category-box">
+                            <h3>{{ category.name }}</h3>
+                            <ul>
+                                {% for blog in category.blogs.all %}
+                                <li><a href="{% url 'blog_details' blog.id %}">{{ blog.title }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            <hr>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Side widget
+            <div class="card mb-4">
+                <div class="card-header">Side Widget</div>
+                <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
+            </div>
+            -->
+        </div>
+    </div>
+</div>
+<!-- Footer-->
+
+
+
+<script>
+function confirmDelete(blogId) {
+    Swal.fire({
+        title: 'Blog Silme İşlemi',
+        text: 'Bu blogu silmek istediğinize emin misiniz?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Evet, Sil',
+        cancelButtonText: 'İptal',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // AJAX isteği göndererek blogu silme işlemini gerçekleştirin
+            fetch(`/blog/delete/${blogId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}', // Django CSRF token'ı
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.fire({
+                    title: 'Blog Silme İşlemi',
+                    text: data.message,
+                    icon: 'success',
+                }).then(() => {
+                    window.location.reload();
+                });
+                
+                if (data.message === 'Blog başarıyla silindi.') {
+                    var blogElement = document.getElementById(`blog-${blogId}`);
+                    if (blogElement) {
+                        blogElement.remove();
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+            });
+        }
+    });
+}
+</script>
+
+{% endblock %}
+

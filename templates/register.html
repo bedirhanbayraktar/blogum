@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header bg-primary text-white text-center">
+            <h2>Kayıt Ol</h2>
+          </div>
+          <div class="card-body">
+            <form method="post" action="{% url 'register' %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="username" class="form-label">Kullanıcı Adı:</label>
+                <input type="text" id="username" name="username" class="form-control" required>
+                {% if form.errors.username %}
+                  <div class="alert alert-danger">{{ form.errors.username }}</div>
+                {% endif %}
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Şifre:</label>
+                <input type="password" id="password" name="password1" class="form-control" required>
+                {% if form.errors.password1 %}
+                  <div class="alert alert-danger">{{ form.errors.password1 }}</div>
+                {% endif %}
+              </div>
+              <div class="mb-3">
+                <label for="confirm_password" class="form-label">Şifreyi Onayla:</label>
+                <input type="password" id="confirm_password" name="password2" class="form-control" required>
+                {% if form.errors.password2 %}
+                  <div class="alert alert-danger">{{ form.errors.password2 }}</div>
+                {% endif %}
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer text-center">
+            <p class="mb-0">Zaten bir hesabınız var mı? <a href="{% url 'login' %}">Giriş Yapın</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<style>
+  footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
+      color: #fff; /* Footer metin rengi */
+      padding: 20px 0;
+      text-align: center;
+  }
+</style>
+
+{% endblock %}
